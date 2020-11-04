@@ -7,8 +7,6 @@ function init()
     fetch('http://localhost:3000/preference')
     .then(res => res.json())
     .then((preference) => {
-        console.log(preference);
-
         for (const entity of preference.entities) {
             if (entity.class === 'image_uploader') {
                 if (entity.parent === 'body')
