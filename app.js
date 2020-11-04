@@ -1,6 +1,18 @@
 import http from 'http';
-import path from 'path';
 import express from 'express';
+
+const app_config = {
+    entities: [
+        {
+            class: 'image_uploader',
+            name: 'image-file-upload',
+            button_desc: 'Submit',
+            parent: 'body',
+            type: 'file',
+            api: '/upload'
+        }
+    ]
+};
 
 const app = express();
 const httpServer = http.createServer(app);
@@ -11,20 +23,19 @@ httpServer.listen(PORT, () => {
     console.log(`Server is listening on port ${PORT}`);
 });
 
-console.log(path.join(path.dirname('.'), './public'));
+app.use(express.static('public'));
 
-app.get("/", express.static(path.join(path.dirname('.'), './public')));
+app.get(
+    "/preference",
+    function (req, res) {
+        res.json(app_config).status(200);
+    }
+)
 
-import multer from 'multer';
+import add_image_uploader from './modules/add_image_uploader.js';
 
-const upload = multer({
-    dest: path.join(path.dirname("."), "./image_files")
-});
-
-import { on_upload } from './modules/image_file_handler.js';
-
-app.post(
-    "/upload",
-    upload.single("file"),
-    on_upload
-);
+for (const entity of app_config.entities) {
+    if (entity.class === 'image_uploader') {
+        add_image_uploader(app, entity);
+    }
+}
